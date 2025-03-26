@@ -61,6 +61,16 @@ const JoinRoom = () => {
 
     setIsJoining(true)
     try {
+      // Önce kullanıcının kimlik doğrulamasını yapalım
+      // Kullanıcı giriş yapmamışsa, önce giriş yaptıralım
+      if (!currentUser) {
+        await signIn(nickname)
+      } else if (nickname !== authNickname) {
+        // Kullanıcı giriş yapmış ve nickname değişmişse güncelle
+        await updateNickname(nickname)
+      }
+
+      // Şimdi oda kontrollerini yapalım
       const roomRef = doc(db, "rooms", roomId)
       const roomSnap = await getDoc(roomRef)
 
@@ -97,13 +107,6 @@ const JoinRoom = () => {
         toast.error("Bu takma ad odada başka bir oyuncu tarafından kullanılıyor")
         setIsJoining(false)
         return
-      }
-
-      // Eğer kullanıcı giriş yapmışsa ve nickname değiştiyse, güncelle
-      if (currentUser && nickname !== authNickname) {
-        await updateNickname(nickname)
-      } else if (!currentUser) {
-        await signIn(nickname)
       }
 
       if (isPlayerInRoom) {
