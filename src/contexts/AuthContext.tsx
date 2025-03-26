@@ -5,6 +5,7 @@ import { onAuthStateChanged, signInAnonymously } from "firebase/auth"
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore"
 import { auth, db } from "../firebase/config"
 import { toast } from "react-hot-toast"
+import { isNicknameBlacklisted } from "../utils/blacklistCheck"
 
 interface AuthContextType {
   currentUser: any
@@ -47,6 +48,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (nickname: string) => {
     try {
+      // Blacklist kontrolü
+      const isBlacklisted = await isNicknameBlacklisted(nickname)
+      if (isBlacklisted) {
+        toast.error("Bu kullanıcı adı kullanılamaz")
+        return
+      }
+
       const { user } = await signInAnonymously(auth)
 
       // Kullanıcı kimliği varsa devam et
@@ -70,6 +78,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!currentUser) return
 
     try {
+      // Blacklist kontrolü
+      const isBlacklisted = await isNicknameBlacklisted(newNickname)
+      if (isBlacklisted) {
+        toast.error("Bu kullanıcı adı kullanılamaz")
+        return
+      }
+
       // Firestore'daki kullanıcı belgesini güncelle
       await updateDoc(doc(db, "users", currentUser.uid), {
         nickname: newNickname,

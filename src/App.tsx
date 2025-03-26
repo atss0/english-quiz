@@ -10,6 +10,7 @@ import Game from "./pages/Game"
 import { AuthProvider } from "./contexts/AuthContext"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { useEffect } from "react"
+import AdBlockChecker from "./components/AdBlockChecker"
 
 function App() {
   // Sayfa yüklendiğinde tema tercihini kontrol et
@@ -61,6 +62,7 @@ function App() {
               }
             />
           </Routes>
+          <AdBlockChecker />
         </div>
       </Router>
     </AuthProvider>

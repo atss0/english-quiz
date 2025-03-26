@@ -11,14 +11,15 @@ import ScoreBoard from "../components/ScoreBoard"
 import { fetchWordsFromCategories, getFallbackWords } from "../utils/wordService"
 import { shuffleArray } from "../utils/arrayUtils"
 import { Clock, Users, LogOut, Send, SkipForward, Award, Home, Play, User, Check, Loader2 } from "lucide-react"
+import Advertisement from "../components/Advertisement"
 
 // Oyun içi bileşenler
 interface AnswerInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSubmit: (value: string) => void;
-  disabled: boolean;
-  autoFocus?: boolean;
+  value: string
+  onChange: (value: string) => void
+  onSubmit: (value: string) => void
+  disabled: boolean
+  autoFocus?: boolean
 }
 
 const AnswerInput = ({ value, onChange, onSubmit, disabled, autoFocus = true }: AnswerInputProps) => {
@@ -436,9 +437,20 @@ const Game = () => {
     if (!answer.trim()) return false
 
     const normalizedAnswer = answer.trim().toLowerCase()
-    const normalizedCorrect = word.isEnglish ? word.turkish.toLowerCase() : word.english.toLowerCase()
 
-    return normalizedAnswer === normalizedCorrect
+    // Doğru cevapları al
+    let correctAnswers: string[] = []
+
+    if (word.isEnglish) {
+      // Türkçe cevapları kontrol et
+      correctAnswers = Array.isArray(word.turkish) ? word.turkish : [word.turkish]
+    } else {
+      // İngilizce cevapları kontrol et
+      correctAnswers = Array.isArray(word.english) ? word.english : [word.english]
+    }
+
+    // Cevabın doğru cevaplardan biri olup olmadığını kontrol et
+    return correctAnswers.some((correct) => normalizedAnswer === correct.toLowerCase())
   }
 
   const advanceToNextRound = async () => {
@@ -682,6 +694,11 @@ const Game = () => {
                 <ScoreBoard players={room.players} />
               </div>
 
+              {/* Reklam Alanı - Oyun sonuçları ekranı */}
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-4 rounded-3xl shadow-lg mb-8 border border-gray-100 dark:border-gray-700">
+                <Advertisement adType="rectangle" adFormat="rectangle" style={{ width: "100%", height: "250px" }} />
+              </div>
+
               <div className="mt-10 flex flex-wrap justify-center gap-6">
                 {room.host === currentUser?.uid && (
                   <button
@@ -744,7 +761,26 @@ const Game = () => {
 
   // Tur sonuçları ekranı
   if (showScoreboard && roundResults) {
-    const correctWord = currentWord ? (currentWord.isEnglish ? currentWord.turkish : currentWord.english) : ""
+
+    // Doğru cevabı göstermek için
+    let correctAnswerDisplay = ""
+    if (currentWord) {
+      if (currentWord.isEnglish) {
+        // Türkçe karşılıkları göster
+        if (Array.isArray(currentWord.turkish)) {
+          correctAnswerDisplay = currentWord.turkish.join(", ")
+        } else {
+          correctAnswerDisplay = currentWord.turkish
+        }
+      } else {
+        // İngilizce karşılıkları göster
+        if (Array.isArray(currentWord.english)) {
+          correctAnswerDisplay = currentWord.english.join(", ")
+        } else {
+          correctAnswerDisplay = currentWord.english
+        }
+      }
+    }
 
     // Oyuncuları puana göre sırala
     const sortedPlayers = [...room.players].sort((a, b) => b.score - a.score)
@@ -781,12 +817,19 @@ const Game = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-800/50">
                   <p className="text-lg mb-2 text-gray-800 dark:text-gray-200">
-                    Doğru Cevap: <span className="font-bold text-emerald-600 dark:text-emerald-400">{correctWord}</span>
+                    Doğru Cevap:{" "}
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{correctAnswerDisplay}</span>
                   </p>
                   <p className="text-lg text-gray-800 dark:text-gray-200">
                     Kelime:{" "}
                     <span className="font-bold">
-                      {currentWord.isEnglish ? currentWord.english : currentWord.turkish}
+                      {currentWord.isEnglish
+                        ? Array.isArray(currentWord.english)
+                          ? currentWord.english[0]
+                          : currentWord.english
+                        : Array.isArray(currentWord.turkish)
+                          ? currentWord.turkish[0]
+                          : currentWord.turkish}
                     </span>
                   </p>
                 </div>
@@ -987,7 +1030,13 @@ const Game = () => {
               {currentWord.isEnglish ? "İngilizce kelimeyi Türkçeye çevirin:" : "Türkçe kelimeyi İngilizceye çevirin:"}
             </h2>
             <div className="text-4xl md:text-5xl font-bold text-center p-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-3xl shadow-inner text-gray-900 dark:text-white border border-indigo-100 dark:border-indigo-800/50">
-              {currentWord.isEnglish ? currentWord.english : currentWord.turkish}
+              {currentWord.isEnglish
+                ? Array.isArray(currentWord.english)
+                  ? currentWord.english[0]
+                  : currentWord.english
+                : Array.isArray(currentWord.turkish)
+                  ? currentWord.turkish[0]
+                  : currentWord.turkish}
             </div>
           </div>
 

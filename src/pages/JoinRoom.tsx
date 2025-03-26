@@ -208,7 +208,7 @@ const JoinRoom = () => {
                 className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium py-3 px-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:-translate-y-1 active:translate-y-0"
               >
                 <LogIn className="w-5 h-5" />
-                {isJoining ? "Katılınıyor..." : "Odaya Katıl"}
+                {isJoining ? "Katılıyor..." : "Katıl"}
               </button>
             </div>
           </form>

@@ -193,31 +193,34 @@ const Room = () => {
       // AuthContext üzerinden nickname'i güncelle
       await updateNickname(newNickname)
 
-      // Odadaki oyuncu listesini güncelle
-      if (room && roomId) {
-        const roomRef = doc(db, "rooms", roomId)
-        const updatedPlayers = room.players.map((player: any) => {
-          if (player.id === currentUser?.uid) {
-            return { ...player, nickname: newNickname }
-          }
-          return player
-        })
-
-        await updateDoc(roomRef, {
-          players: updatedPlayers,
-          lastActivity: serverTimestamp(),
-        })
-
-        // Eğer kullanıcı oda sahibiyse, hostNickname'i de güncelle
-        if (room.host === currentUser?.uid) {
-          await updateDoc(roomRef, {
-            hostNickname: newNickname,
+      // Eğer updateNickname başarılı olduysa (blacklist kontrolünden geçtiyse)
+      // ve nickname değiştiyse, odadaki oyuncu listesini güncelle
+      if (nickname !== newNickname) {
+        // Odadaki oyuncu listesini güncelle
+        if (room && roomId) {
+          const roomRef = doc(db, "rooms", roomId)
+          const updatedPlayers = room.players.map((player: any) => {
+            if (player.id === currentUser?.uid) {
+              return { ...player, nickname: newNickname }
+            }
+            return player
           })
-        }
-      }
 
-      toast.success("Takma adınız güncellendi")
-      setIsEditingNickname(false)
+          await updateDoc(roomRef, {
+            players: updatedPlayers,
+            lastActivity: serverTimestamp(),
+          })
+
+          // Eğer kullanıcı oda sahibiyse, hostNickname'i de güncelle
+          if (room.host === currentUser?.uid) {
+            await updateDoc(roomRef, {
+              hostNickname: newNickname,
+            })
+          }
+        }
+
+        setIsEditingNickname(false)
+      }
     } catch (error) {
       console.error("Takma ad güncellenirken hata:", error)
       toast.error("Takma ad güncellenirken bir hata oluştu")

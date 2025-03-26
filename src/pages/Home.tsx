@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { ArrowRight, Users, BookOpen, Award, Globe, Instagram } from "lucide-react"
+import Advertisement from "../components/Advertisement"
 
 const Home = () => {
   const [, setNickname] = useState("")
@@ -38,6 +39,11 @@ const Home = () => {
             <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg font-medium">İngilizce Kelime Quizi</p>
           </div>
 
+          {/* Reklam Alanı - Ana sayfa üst kısım */}
+          <div className="my-4">
+            <Advertisement adType="banner" style={{ width: "100%", height: "100px" }} />
+          </div>
+
           <div className="space-y-5">
             <button
               onClick={() => navigate("/create-room")}
@@ -69,6 +75,12 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {/* Reklam Alanı - Ana sayfa alt kısım */}
+      <div className="w-full max-w-md my-4">
+        <Advertisement adType="rectangle" adFormat="rectangle" style={{ width: "100%", height: "250px" }} />
+      </div>
+
       <footer className="w-full max-w-md mt-8 text-center">
         <div className="p-6 rounded-3xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-100 dark:border-gray-700 shadow-md">
           <div className="flex justify-center space-x-6 mb-4">
@@ -78,7 +90,7 @@ const Home = () => {
 
           <div className="mb-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              Coded by <span className="font-medium text-purple-600 dark:text-purple-400">ATŞ</span>
+              Coded by <span className="font-medium text-purple-600 dark:text-purple-400">atş</span>
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               All rights reserved <span className="font-medium text-indigo-600 dark:text-indigo-400">Lango®</span>{" "}
